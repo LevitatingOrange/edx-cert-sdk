@@ -1,0 +1,23 @@
+<%page expression_filter="h"/>
+<%!
+%>
+
+<%def name='certificate_asset_url(slug)'><%
+    url = get_url_for_slug(slug)
+%>${url | n, decode.utf8}</%def>
+
+<%def name='css(group, raw=False)'>
+<%
+    url = get_url_for_slug(group)
+%>
+     <link rel="stylesheet" href="${ url | n, decode.utf8 }" type="text/css" media="all"/>
+</%def>
+
+<%def name='js(group)'>
+<%
+    url = get_url_for_slug(group)
+%>
+     <script type="text/javascript" src="${ url | n, decode.utf8 }"></script>
+</%def>
+
+

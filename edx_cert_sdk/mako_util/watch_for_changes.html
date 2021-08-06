@@ -1,0 +1,8 @@
+<script type="text/javascript">
+    const evtSource = new EventSource("push");
+    evtSource.onmessage = function(event) {
+        console.log("Files changed:", event);
+        window.location.reload(true); 
+    }
+</script>
+
