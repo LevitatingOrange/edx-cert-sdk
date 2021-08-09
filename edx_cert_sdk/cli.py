@@ -11,17 +11,27 @@ from . import mako_util
 from click import FileError
 from starlette.applications import Starlette
 from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
 from starlette.responses import HTMLResponse
 from starlette.requests import Request
 from sse_starlette.sse import EventSourceResponse
+from .static_files import MultiDirStaticFiles
 import uvicorn
 import asyncio
 import watchgod
 import lxml.html
-from typing import Set
+from typing import Set, Optional
 
 PROJECT_NAME = "edx-cert-sdk"
+
+class StubUser:
+    id = 0
+    def __init__(self, id: Optional[int] = None):
+        if id:
+            self.id = id
+
+    def is_authenticated(self):
+        return True
+        
 
 
 @click.group()
@@ -64,10 +74,11 @@ def dev(settings: Settings, watch, build_assets):
     context = {}
     with open(settings.cert_data_file, "r") as cf:
         context.update(json.load(cf))
+    context["_"] = lambda x: x
+    context["user"] = StubUser() 
 
     routes = [
-        Mount("/static", app=StaticFiles(directory=settings.dist_dir), name="static"),
-        Mount("/static", app=StaticFiles(directory=settings.img_dir), name="static"),
+        Mount("/static", app=MultiDirStaticFiles(directories=[settings.dist_dir, settings.img_dir]), name="static"),
         Mount("/", app=main_template),
     ]
 
@@ -110,7 +121,7 @@ async def watch_app(request):
 async def build_assets(settings: Settings):
     click.echo("Rebuilding assets...")
     await asyncio.create_subprocess_shell(
-        f"esbuild {settings.js_root_file} --bundle --sourcemap --outfile={settings.dist_dir}/index.js"
+        f"npm run build"
     )
 
 

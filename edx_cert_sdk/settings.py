@@ -12,7 +12,6 @@ class Settings:
     DEFAULT_CONFIG_PATH = "./certconf.toml"
 
     template_root_file: Path = Path("index.html")
-    js_root_file: Path = Path("src/index.js")
     img_dir: Path = Path("img/")
     dist_dir: Path = Path("dist/")
     cert_data_file: Path = Path("certdata.json")
